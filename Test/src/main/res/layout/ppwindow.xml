@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/kuan_up" />
+
+    <RelativeLayout
+        android:id="@+id/ppwindow_vin"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/juxin_pp_up_button"
+        android:clickable="true" >
+
+        <ImageView
+            android:id="@+id/pp_iamge01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:src="@drawable/pp_icon04" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/pp_iamge01"
+            android:padding="10dp"
+            android:text="@string/ppwindow_vin"
+            android:textColor="@color/white"
+            android:textSize="@dimen/setting_button" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/pp_line" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/ppwindow_checkre"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/juxin_pp_button"
+        android:clickable="true" >
+
+        <ImageView
+            android:id="@+id/pp_iamge02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:src="@drawable/pp_icon01" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/pp_iamge02"
+            android:padding="10dp"
+            android:text="@string/pp_checkre"
+            android:textColor="@color/white"
+            android:textSize="@dimen/setting_button" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/pp_line" />
+    </RelativeLayout>
+    
+     <RelativeLayout
+        android:id="@+id/ppwindow_upload"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/juxin_pp_button"
+        android:clickable="true" >
+
+        <ImageView
+            android:id="@+id/pp_iamge03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:src="@drawable/pp_upload" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/pp_iamge03"
+            android:padding="10dp"
+            android:text="@string/pp_checkupload"
+            android:textColor="@color/white"
+            android:textSize="@dimen/setting_button" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/pp_line" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/ppwindow_time"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/juxin_pp_bm_button"
+        android:clickable="true" >
+
+        <ImageView
+            android:id="@+id/pp_iamge04"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:src="@drawable/pp_icon02" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/pp_iamge04"
+            android:padding="10dp"
+            android:text="@string/pp_checktime"
+            android:textColor="@color/white"
+            android:textSize="@dimen/setting_button" />
+    </RelativeLayout>
+
+</LinearLayout>

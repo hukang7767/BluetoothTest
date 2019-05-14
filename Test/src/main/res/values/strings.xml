@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="appid">594cc801</string>
+    <string name="text_begin">请开始说话…</string>
+
+
+    <string name="app_name">东风本田蓝牙检测</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="settings">设置</string>
+    <string name="home_title">东风本田蓝牙检测系统</string>
+    <string name="wait_test">等待测试</string>
+    <string name="initialize_bluetooth">初始化蓝牙</string>
+    <string name="huaxin_name">武汉华信数据系统有限公司</string>
+    <string name="huaxin_phone">联系电话：027-87775236</string>
+    <string name="cancel">取消</string>
+    <string name="startdetection">扫码检测</string>
+    <string name="remenberchoose">记住我的选择，可在设置中更改</string>
+    <string name="maindetection">主导检测</string>
+    <string name="assistdetection">辅助检测</string>
+    <string name="setting">设置</string>
+    <string name="settingip">网络设置</string>
+    <string name="setting_histroy">历史数据</string>
+    <string name="settingvin">设置VIN</string>
+
+    <!--  -->
+    <string name="state_network_check">正在检测网络状态</string>
+    <string name="state_network_wait">正在等待网络连接</string>
+    <string name="state_bulethoot_check">正在打开蓝牙</string>
+    <string name="state_socket_wait">正在打开服务</string>
+    <string name="state_wait_vin">等待车辆VIN接入</string>
+    <string name="state_wait_buletooth">等待车辆蓝牙接入</string>
+    <string name="test_in">正在检测</string>
+    <string name="test_replay">重新检测</string>
+    <string name="test_reday">接入成功，准备开始</string>
+    <string name="test_paly_init">准备放音检测</string>
+    <string name="test_paly_listen">正在接听测试音</string>
+    <string name="test_paly">放音检测第%s次</string>
+    <string name="test_paly_ok">放音检测完成OK</string>
+    <string name="test_paly_ng">放音检测完成NG</string>
+    <string name="test_listen_init">准备听音检测</string>
+    <string name="test_listen_paly">正在播放测试音</string>
+    <string name="test_listen">听音检测第%s次</string>
+    <string name="test_listen_ok">听音检测完成OK</string>
+    <string name="test_listen_ng">听音检测完成NG</string>
+    <string name="test_over_send">正在发送检测报告</string>
+    <string name="test_over_initialize">发送完毕。初始化检测</string>
+    <string name="localip">当前IP:%s</string>
+    <string name="localspeaktext">当前识别等级:%s</string>
+    <string name="loaclprot">端\t\t口:%s</string>
+    <string name="upload">上传</string>
+    <string name="save">保存</string>
+    <string name="search_type">分类查询</string>
+    <string name="vinmsg_wait">VIN:等待接入</string>
+    <string name="pp_checktime">检测时间</string>
+    <string name="pp_checkre">检测结果</string>
+    <string name="pp_checkupload">上传结果</string>
+    <string name="showtag_main">主</string>
+    <string name="showtag_second">次</string>
+    <string name="ppwindow_vin">VIN编号</string>
+    <string name="ok">OK</string>
+    <string name="ng">NG</string>
+    <string name="notupload">未上传</string>
+    <string name="uploadok">已上传</string>
+    <string name="ip_server">服务器IP</string>
+    <string name="defule_ip">000.000.0.</string>
+    <string name="ip_main">主设备IP</string>
+    <string name="ip_secund">检测超时</string>
+    <string name="port_server">服务端口</string>
+    <string name="start">开始</string>
+    <string name="load_more">加载更多...</string> <!-- Accessibility description sent when user starts drawing a lock pattern. [CHAR LIMIT=NONE] -->
+    <string name="lockscreen_access_pattern_start">Pattern started</string>
+    <!-- Accessibility description sent when the pattern times out and is cleared. [CHAR LIMIT=NONE] -->
+    <string name="lockscreen_access_pattern_cleared">Pattern cleared</string>
+    <!-- Accessibility description sent when user adds a cell to the pattern. [CHAR LIMIT=NONE] -->
+    <string name="lockscreen_access_pattern_cell_added">Cell added</string>
+    <!-- Accessibility description sent when user completes drawing a pattern. [CHAR LIMIT=NONE] -->
+    <string name="lockscreen_access_pattern_detected">Pattern completed</string>
+
+</resources>

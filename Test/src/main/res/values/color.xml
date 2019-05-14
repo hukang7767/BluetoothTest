@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="home_title_bg">#3e454d</color>
+    <color name="home_bottom_bg">#3e454d</color>
+    <color name="home_title_name">#ffffff</color>
+    <color name="home_msg_show_text">#ffffff</color>
+    <color name="home_bottom_infotext">#ffffff</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+
+    <drawable name="transparent_color">#00ffffff</drawable>
+
+</resources>

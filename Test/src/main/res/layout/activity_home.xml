@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/home_title_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/home_title_bg"
+        android:gravity="center"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/carlogo"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:text="@string/home_title"
+            android:textColor="@color/home_title_name"
+            android:textSize="@dimen/home_title_text"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/home_bottom_layout_ref"
+        android:layout_below="@+id/home_title_layout"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="语音识别功能由科大讯飞提供"
+            android:textColor="@android:color/white"/>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.0"
+            android:background="@drawable/show_msg_bg">
+
+            <TextView
+                android:id="@+id/home_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tag_main"
+                android:padding="2dp"
+                android:text="@string/showtag_main"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/home_msg_show"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="5dp"
+                android:paddingBottom="20dp"
+                android:singleLine="true"
+                android:text="@string/wait_test"
+                android:textColor="@color/white"
+                android:textSize="@dimen/home_msg_text"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/home_msg_show_vin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:padding="10dp"
+                android:text="@string/vinmsg_wait"
+                android:textColor="@color/white"
+                android:textSize="@dimen/home_vin_text"
+                android:textStyle="bold"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.3"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/home_button_centre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/control_botton"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/home_button_progressbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/progressbar_show"/>
+
+                <TextView
+                    android:id="@+id/home_button_msg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/startdetection"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/home_button_start"/>
+            </FrameLayout>
+            <Button
+                android:id="@+id/restart_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:text="软件重启"/>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/home_button_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:orientation="horizontal"
+                    android:paddingRight="20dp">
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/home_setting_red_button_left"
+                        android:clickable="false"
+                        android:src="@drawable/cancel_icon"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/home_setting_red_button_right"
+                        android:clickable="false"
+                        android:gravity="center"
+                        android:text="@string/cancel"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/home_title_text"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/home_button_setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:orientation="horizontal"
+                    android:paddingLeft="20dp">
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/home_setting_bule_button_left"
+                        android:clickable="false"
+                        android:src="@drawable/setting_icon"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/home_setting_bule_button_right"
+                        android:clickable="false"
+                        android:gravity="center"
+                        android:text="@string/settings"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/home_title_text"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <include
+        android:id="@+id/home_bottom_layout_ref"
+        layout="@layout/activity_home_bottom_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

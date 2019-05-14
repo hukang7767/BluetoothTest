@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/home_bottom_layout_ref"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:background="#3e454d">
+
+            <ImageView
+                android:id="@+id/setting_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:padding="10dp"
+                android:src="@drawable/setting_back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/setting"
+                android:textColor="@color/white"
+                android:textSize="@dimen/setting_title" />
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:drawablePadding="10dp"
+                android:drawableTop="@drawable/setting_button02_d"
+                android:gravity="center"
+                android:onClick="historyData"
+                android:text="历史数据"
+                android:textColor="#1a1a1a"
+                android:textSize="@dimen/setting_button" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:drawablePadding="10dp"
+                android:drawableTop="@drawable/setting_butto01_d"
+                android:gravity="center"
+                android:onClick="ipset"
+                android:text="@string/settingip"
+                android:textColor="#1a1a1a"
+                android:textSize="@dimen/setting_button" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:drawablePadding="10dp"
+                android:drawableTop="@drawable/setting_button04_d"
+                android:gravity="center"
+                android:onClick="cleandata"
+                android:text="清除数据"
+                android:textColor="#1a1a1a"
+                android:textSize="@dimen/setting_button"
+             />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:drawablePadding="10dp"
+                android:drawableTop="@drawable/setting_button03_d"
+                android:gravity="center"
+                android:onClick="switchmode"
+                android:text="清除蓝牙"
+                android:textColor="#1a1a1a"
+                android:textSize="@dimen/setting_button"
+                android:visibility="visible" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:drawablePadding="10dp"
+                android:drawableTop="@drawable/setting_butto01_d"
+                android:gravity="center"
+                android:onClick="settingvin"
+                android:text="配置VIN"
+                android:textColor="#1a1a1a"
+                android:textSize="@dimen/setting_button"
+                 />
+
+            <CheckBox
+                android:id="@+id/setting_bl_filter_chbx"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:drawableTop="@drawable/bluetooth"
+                android:drawablePadding="10dp"
+                android:gravity="center"
+                android:text="过滤蓝牙"
+                android:textColor="#1a1a1a"
+                android:textSize="@dimen/setting_button"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <include
+        android:id="@+id/home_bottom_layout_ref"
+        layout="@layout/activity_home_bottom_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
