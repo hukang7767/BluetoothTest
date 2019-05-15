@@ -150,6 +150,7 @@ public class CarApp extends Application {
             if (!mMap.keySet().contains(address)||(mMacList.contains(address)&&CarApp.isMach(d))){
                 //自动连接
                 return 3;
+
             }
 
 
