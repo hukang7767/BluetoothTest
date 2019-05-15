@@ -341,10 +341,6 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                         mActivtiy.mVinHintTv.setText(R.string.vinmsg_wait);
                     }
                     mActivtiy.mTestProcessHintTv.setText("等待检测");
-                    if (mActivtiy.mTimer!=null){
-                        mActivtiy.mTimer.cancel();
-                        mActivtiy.mTimer = null;
-                    }
                     break;
                 case TOAST:
                     if (msg.arg1 == 0) {
@@ -478,9 +474,9 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                sConnectServerThread.stop();
                 dialog.dismiss();
                 finish();
+                stopThread();
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -545,7 +541,10 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         //重置ui
         mHandler.sendEmptyMessage(RESET);
         //		mHandler.sendEmptyMessageDelayed(CHECK_START,2000);
-
+        if (mTimer!=null){
+            mTimer.cancel();
+            mTimer = null;
+        }
 
     }
 
@@ -1138,8 +1137,10 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 } else if (!isTestOver) {
                     if (mReply != null) {
                         mMainHomeActivtiy.sendMessage(StateInfo.SEND_NG);
+                        Log.e(TAG, "监测结果上传失败 ");
                     } else {
                         mMainHomeActivtiy.sendMessage(StateInfo.SEND_OK);
+                        Log.e(TAG, "监测结果上传成功 ");
                     }
                 }
             }

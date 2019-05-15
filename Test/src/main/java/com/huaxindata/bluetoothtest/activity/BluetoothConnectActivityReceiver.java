@@ -20,6 +20,7 @@ import com.huaxindata.bluetoothtest.entity.BleDevices;
 import com.huaxindata.bluetoothtest.entity.NetConfig;
 import com.huaxindata.bluetoothtest.entity.VinBean;
 import com.huaxindata.bluetoothtest.util.ClsUtils;
+import com.huaxindata.bluetoothtest.util.Util;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -77,7 +78,17 @@ public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
                     BluetoothDevice.EXTRA_PAIRING_VARIANT,
                     BluetoothDevice.PAIRING_VARIANT_PASSKEY_CONFIRMATION);
             cancel();//取消connect线程
-            //CarApp.isAllowConnect(device)这里起过滤的作用，即已经测试成功的就不让再连了
+            //没有获取到vin阻止连接，监测未结束拒绝连接，连接过的mac地址与vin不匹配拒绝连接
+            if (VinBean.getVin() == null||!MainHomeActivtiy.isTestOver||!CarApp.isMach(device)) {
+                abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
+                boolean confirmation = device.setPairingConfirmation(false);
+                for (int i = 0; i < 5; i++) {//发送上次，确保发送成功
+                    if (confirmation) {
+                        break;
+                    }
+                    confirmation = device.setPairingConfirmation(false);
+                }
+            }
             boolean isAllowConnect = CarApp.isAllowConnect(device);
             if (isAllowConnect) {
                 abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
@@ -193,15 +204,17 @@ public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
 
 //                    buildIpDialog(device);
                 }else {
-                    boolean confirmation = device.setPairingConfirmation(true);
+                    boolean confirmation = device.setPairingConfirmation(isAllowConnect);
                     for (int i = 0; i < 5; i++) {//发送上次，确保发送成功
                         if (confirmation) {
                             break;
                         }
-                        confirmation = device.setPairingConfirmation(true);
+                        confirmation = device.setPairingConfirmation(isAllowConnect);
                     }
                     BleDevices.setCurrent_Paired_mac(device.getAddress());
                     CarApp.addMac(device.getAddress());
+                    CarApp.addMacAndVin(device.getAddress(),VinBean.getVin());
+
                 }
                 Log.e(TAG, "pair:=========回复连接请求:" + isAllowConnect + "===连接请求发送是否成功：" );
                 break;
