@@ -20,6 +20,7 @@ import com.huaxindata.bluetoothtest.entity.BleDevices;
 import com.huaxindata.bluetoothtest.entity.NetConfig;
 import com.huaxindata.bluetoothtest.entity.VinBean;
 import com.huaxindata.bluetoothtest.util.ClsUtils;
+import com.huaxindata.bluetoothtest.util.Util;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -34,33 +35,9 @@ public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
     public static ConnectThread connectThread;
     private Context mContext;
     private static BluetoothDevice remoteDevice;
-    private BluetoothAdapter mBluetoothAdapter;
     private AlertDialog dialog;
 
-    //得到配对的设备列表，清除已配对的设备
-    public void removePairDevice() {
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter != null) {
-            //mBluetoothAdapter初始化方式
-            //这个就是获取已配对蓝牙列表的方法
-            Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
-            for (BluetoothDevice device : bondedDevices) {
-                Log.e(TAG, "removePairDevice: "+device.getAddress());
-                //这里可以通过device.getName()  device.getAddress()来判断是否是自己需要断开的设备
-                unpairDevice(device);
-            }
-        }
-    }
 
-    //反射来调用BluetoothDevice.removeBond取消设备的配对
-    private void unpairDevice(BluetoothDevice device) {
-        try {
-            Method m = device.getClass().getMethod("removeBond", (Class[]) null);
-            m.invoke(device, (Object[]) null);
-        } catch (Exception e) {
-            Log.e("mate", e.getMessage());
-        }
-    }
     @Override
     public void onReceive(Context context, Intent intent) {
         this.mContext = context;
@@ -71,13 +48,22 @@ public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
         if (action.equals("android.bluetooth.device.action.PAIRING_REQUEST")) {
             //配对请求
             Log.e(TAG, "onReceive:========================请求配对设备：" + device.getAddress());
-            removePairDevice();
             //获取配对类型
             final int type = intent.getIntExtra(
                     BluetoothDevice.EXTRA_PAIRING_VARIANT,
                     BluetoothDevice.PAIRING_VARIANT_PASSKEY_CONFIRMATION);
             cancel();//取消connect线程
-            //CarApp.isAllowConnect(device)这里起过滤的作用，即已经测试成功的就不让再连了
+            //没有获取到vin阻止连接，监测未结束拒绝连接，连接过的mac地址与vin不匹配拒绝连接
+            if (VinBean.getVin() == null||!MainHomeActivtiy.isTestOver||!CarApp.isMach(device)) {
+                abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
+                boolean confirmation = device.setPairingConfirmation(false);
+                for (int i = 0; i < 5; i++) {//发送上次，确保发送成功
+                    if (confirmation) {
+                        break;
+                    }
+                    confirmation = device.setPairingConfirmation(false);
+                }
+            }
             boolean isAllowConnect = CarApp.isAllowConnect(device);
             if (isAllowConnect) {
                 abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
@@ -122,6 +108,8 @@ public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
             final int connectionState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_CONNECTION_STATE);
             switch (connectionState) {
                 case BluetoothAdapter.STATE_CONNECTED:
+                    BleDevices.setCurrent_Paired_mac(device.getAddress());
+                    CarApp.addMac(device.getAddress());
                     Log.e(TAG, "BluetoothAdapter:xxxx================蓝牙已连接:" + device.getAddress());
                     break;
                 case BluetoothAdapter.STATE_CONNECTING:
@@ -139,6 +127,7 @@ public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
             final int bondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE);
             switch (bondState) {
                 case BluetoothDevice.BOND_BONDED:
+                    CarApp.addMacAndVin(device.getAddress(),VinBean.getVin());
                     Log.e(TAG, "BluetoothDevice:BOND================蓝牙设备已配对:" + device.getAddress());
                     break;
                 case BluetoothDevice.BOND_BONDING:
@@ -193,15 +182,14 @@ public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
 
 //                    buildIpDialog(device);
                 }else {
-                    boolean confirmation = device.setPairingConfirmation(true);
+                    boolean confirmation = device.setPairingConfirmation(isAllowConnect);
                     for (int i = 0; i < 5; i++) {//发送上次，确保发送成功
                         if (confirmation) {
                             break;
                         }
-                        confirmation = device.setPairingConfirmation(true);
+                        confirmation = device.setPairingConfirmation(isAllowConnect);
                     }
-                    BleDevices.setCurrent_Paired_mac(device.getAddress());
-                    CarApp.addMac(device.getAddress());
+
                 }
                 Log.e(TAG, "pair:=========回复连接请求:" + isAllowConnect + "===连接请求发送是否成功：" );
                 break;

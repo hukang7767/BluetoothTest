@@ -340,6 +340,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                         mActivtiy.mTestStateHintTv.setText(R.string.startdetection);
                         mActivtiy.mVinHintTv.setText(R.string.vinmsg_wait);
                     }
+                    mActivtiy.mTestProcessHintTv.setText("等待检测");
                     break;
                 case TOAST:
                     if (msg.arg1 == 0) {
@@ -473,9 +474,9 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                sConnectServerThread.stop();
                 dialog.dismiss();
                 finish();
+                stopThread();
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -540,11 +541,11 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         //重置ui
         mHandler.sendEmptyMessage(RESET);
         //		mHandler.sendEmptyMessageDelayed(CHECK_START,2000);
-
         if (mTimer!=null){
             mTimer.cancel();
             mTimer = null;
         }
+
     }
 
     /**
@@ -761,7 +762,30 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         isGetSecondVin = true;
         finishRun(VinBean.getLastVin());
     }
+    //得到配对的设备列表，清除已配对的设备
+    public void removePairDevice() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter != null) {
+            //mBluetoothAdapter初始化方式
+            //这个就是获取已配对蓝牙列表的方法
+            Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
+            for (BluetoothDevice device : bondedDevices) {
+                Log.e(TAG, "removePairDevice: "+device.getAddress());
+                //这里可以通过device.getName()  device.getAddress()来判断是否是自己需要断开的设备
+                unpairDevice(device);
+            }
+        }
+    }
 
+    //反射来调用BluetoothDevice.removeBond取消设备的配对
+    private void unpairDevice(BluetoothDevice device) {
+        try {
+            Method m = device.getClass().getMethod("removeBond", (Class[]) null);
+            m.invoke(device, (Object[]) null);
+        } catch (Exception e) {
+            Log.e("mate", e.getMessage());
+        }
+    }
     /**
      * 停止检测
      */
@@ -798,14 +822,15 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             }).start();
         }
         closeSCO();
-        cancelBond(currentTestVin);
-        //上传检测结果到服务器
-        //需要保存测试结果
-        save(currentTestVin);
         //按正常检测流程来检测完了之后重置当前vin,如果连续来了两个vin，则不重置最后一个
         if (!isGetSecondVin) {
             VinBean.setVin(null);
         }
+        cancelBond(currentTestVin);
+//        removePairDevice();
+        //上传检测结果到服务器
+        //需要保存测试结果
+        save(currentTestVin);
         //释放资源，对象置空
         mHandler.sendEmptyMessage(RELEASE);
     }
@@ -1136,8 +1161,10 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 } else if (!isTestOver) {
                     if (mReply != null) {
                         mMainHomeActivtiy.sendMessage(StateInfo.SEND_NG);
+                        Log.e(TAG, "监测结果上传失败 ");
                     } else {
                         mMainHomeActivtiy.sendMessage(StateInfo.SEND_OK);
+                        Log.e(TAG, "监测结果上传成功 ");
                     }
                 }
             }

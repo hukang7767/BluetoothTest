@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import com.huaxindata.bluetoothtest.activity.MainHomeActivtiy;
 import com.huaxindata.bluetoothtest.activity.SettingActivity;
 import com.huaxindata.bluetoothtest.entity.NetConfig;
 import com.huaxindata.bluetoothtest.entity.VinBean;
@@ -20,7 +21,9 @@ import com.iflytek.cloud.SpeechUtility;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CarApp extends Application {
     public static final String TAG="CarApp";
@@ -73,6 +76,7 @@ public class CarApp extends Application {
 
     public static BluetoothProfile mProfile;
     public static List<String> mMacList = new ArrayList<>();
+    public static Map<String ,String> mMap = new HashMap<>();
     private BluetoothProfile.ServiceListener mProfileListener = new BluetoothProfile.ServiceListener() {
         public void onServiceConnected(int profile, BluetoothProfile proxy) {
             if (profile == BluetoothProfile.A2DP) {
@@ -104,6 +108,14 @@ public class CarApp extends Application {
         mMacList.add(mac);
         Log.e(TAG,"addmac=========================成功加入mac过滤器:"+mac);
     }
+    public synchronized static void addMacAndVin(final String mac,final String vin) {
+        if (mMap!=null&&mMap.size()>30){
+            mMap.clear();
+        }
+        mMap.put(mac,vin);
+        Log.e(TAG,"addmap=========================成功加入mac过滤器:"+mac);
+    }
+
     public synchronized static boolean isContainMac(String mac){
         return mMacList.contains(mac);
     }
@@ -126,20 +138,35 @@ public class CarApp extends Application {
         Log.e(TAG, "isAllowConnect: ======是否允许连接3："+true);
         return true;
     }
-    /**
-     * 当mac地址不在过滤列表时，直接返回false表示允许连接
-     * 当mac地址在过滤列表时，则获取与之对应的vin号，如果vin号不为空且vin号与新的vin号不相等时，返回false
-     * 其它情况统一返回true表示阻止连接
-     * @param d
-     * @return
-     */
+    public synchronized static int isAllowConnectType(BluetoothDevice d) {
+        String address = d.getAddress();
+        if (VinBean.getVin()==null||!MainHomeActivtiy.isTestOver||!CarApp.isMach(d)){
+                //拒绝连接
+                return 1;
+            }
+            if (){
+                //需要手动确认
+            }
+            if (!mMap.keySet().contains(address)||(mMacList.contains(address)&&CarApp.isMach(d))){
+                //自动连接
+                return 3;
+            }
+
+
+    }
+        /**
+         * 当mac地址不在过滤列表时，直接返回false表示允许连接
+         * 当mac地址在过滤列表时，则获取与之对应的vin号，如果vin号不为空且vin号与新的vin号不相等时，返回false
+         * 其它情况统一返回true表示阻止连接
+         * @param d
+         * @return
+         */
     private static boolean isStopDeviceConnect(BluetoothDevice d) {
         if (VinBean.getVin() == null) {
             Log.e(TAG, "isStopDeviceConnect: vin为空==========请先获取vin");
             return true;
         }
         final String key = d.getAddress();
-
         if (mMacList.contains(key)) {
             Log.e(TAG, "isStopDeviceConnect: ===============此车已经测过，阻止连接");
             return true;
@@ -147,6 +174,15 @@ public class CarApp extends Application {
         Log.e(TAG, "isStopDeviceConnect:====================此车未测过，不阻止连接");
         return false;
     }
+    //监测当前mac和vin是否匹配,
+    public static boolean isMach(BluetoothDevice d) {
+        final String key = d.getAddress();
+        if (mMap.keySet().contains(key)&&mMap.get(key).equals(VinBean.getVin())){
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void onTerminate() {
         super.onTerminate();
