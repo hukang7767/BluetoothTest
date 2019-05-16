@@ -10,23 +10,22 @@ import android.content.DialogInterface.OnKeyListener;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.huaxindata.bluetoothtest.activity.MainHomeActivtiy;
-import com.huaxindata.bluetoothtest.activity.SettingActivity;
 import com.huaxindata.bluetoothtest.entity.NetConfig;
 import com.huaxindata.bluetoothtest.entity.VinBean;
 import com.huaxindata.bluetoothtest.util.Util;
 import com.iflytek.cloud.SpeechUtility;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CarApp extends Application {
-    public static final String TAG="CarApp";
+    public static final String TAG = "CarApp";
 
     public static final String APP_ID = "appid=";
 
@@ -51,17 +50,16 @@ public class CarApp extends Application {
     }
 
     /**
+     * 初始化网络配置
      *
-     *初始化网络配置
-     *@author:guokailin
-     *time:2017/6/8 13:51
+     * @author:guokailin time:2017/6/8 13:51
      */
     private void initNetConfig() {
         mPreferences = getSharedPreferences("CarBluetoothApp", Context.MODE_PRIVATE);
         NetConfig.setIP(mPreferences.getString("IP", null));
         NetConfig.setPORT(mPreferences.getInt("PORT", 2223));
-        NetConfig.setMaxTest(mPreferences.getInt("MAX_TIME", 45*1000));
-        Log.e(TAG, "initNetConfig:====初始化网络配置,ip:"+NetConfig.getIP()+"==检测超时："+NetConfig.getMaxTest());
+        NetConfig.setMaxTest(mPreferences.getInt("MAX_TIME", 45 * 1000));
+        Log.e(TAG, "initNetConfig:====初始化网络配置,ip:" + NetConfig.getIP() + "==检测超时：" + NetConfig.getMaxTest());
     }
 
     public static OnKeyListener keylistener = new OnKeyListener() {
@@ -76,7 +74,7 @@ public class CarApp extends Application {
 
     public static BluetoothProfile mProfile;
     public static List<String> mMacList = new ArrayList<>();
-    public static Map<String ,String> mMap = new HashMap<>();
+    public static Map<String, Object> mMap = new HashMap<String, Object>();
     private BluetoothProfile.ServiceListener mProfileListener = new BluetoothProfile.ServiceListener() {
         public void onServiceConnected(int profile, BluetoothProfile proxy) {
             if (profile == BluetoothProfile.A2DP) {
@@ -93,6 +91,7 @@ public class CarApp extends Application {
                 mProfile = proxy;
             }
         }
+
         public void onServiceDisconnected(int profile) {
             Log.e(TAG, "onServiceDisconnected=========================蓝牙服务断开");
             if (profile == BluetoothProfile.HEADSET) {
@@ -100,68 +99,109 @@ public class CarApp extends Application {
             }
         }
     };
-    private static int count=0;
+
     public synchronized static void addMac(final String mac) {
-        if (mMacList!=null&&mMacList.size()>30){
+        String macJson = mPreferences.getString("mac", "");
+        List<String> maclist = JSONObject.parseArray(macJson, String.class);
+        mMacList.clear();
+        if (maclist!=null){
+            mMacList.addAll(maclist);
+        }
+        if (mMacList != null && mMacList.size() > 100) {
             mMacList.clear();
         }
-        mMacList.add(mac);
-        Log.e(TAG,"addmac=========================成功加入mac过滤器:"+mac);
-    }
-    public synchronized static void addMacAndVin(final String mac,final String vin) {
-        if (mMap!=null&&mMap.size()>30){
-            mMap.clear();
+        if (!mMacList.contains(mac)) {
+            mMacList.add(mac);
+            Log.e(TAG, "addmac=========================成功加入mac过滤器:" + mac);
         }
-        mMap.put(mac,vin);
-        Log.e(TAG,"addmap=========================成功加入mac过滤器:"+mac);
+        String s = JSON.toJSONString(mMacList);
+        mPreferences.edit().putString("mac", s).commit();
     }
 
-    public synchronized static boolean isContainMac(String mac){
+    public synchronized static void addMacAndVin(final String mac, final String vin) {
+        String macJson = mPreferences.getString("macMap", "");
+        JSONObject jsonObject = JSONObject.parseObject(macJson);
+        mMap.clear();
+        if (jsonObject!=null){
+            mMap.putAll(jsonObject);     //json对象转Map
+        }
+        if (mMap != null && mMap.size() > 100) {
+            mMap.clear();
+        }
+        mMap.put(mac, vin);
+        Log.e(TAG, "addmap=========================成功加入mac过滤器:" + mac);
+        String s = JSON.toJSONString(mMap);
+        mPreferences.edit().putString("macMap", s).commit();
+    }
+
+    public synchronized static boolean isContainMac(String mac) {
         return mMacList.contains(mac);
     }
+
     /**
      * 是否允许连接，即如果上一个vin对应的中控已经检测成功并且加入到缓存列表中时
      * 又来一个同样的vin,则不允许连接，就是说，同样的vin对应的中控检测成功后不可连续检测
+     *
      * @param d
      * @return
      */
     public synchronized static boolean isAllowConnect(BluetoothDevice d) {
 
         if (isStopDeviceConnect(d)) {
-            Log.e(TAG, "isAllowConnect: ======是否允许连接1："+false);
+            Log.e(TAG, "isAllowConnect: ======是否允许连接1：" + false);
             return false;
         }
         if (Util.isHeadSetConnect()) {
-            Log.e(TAG, "isAllowConnect: ======是否允许连接2："+false);
+            Log.e(TAG, "isAllowConnect: ======是否允许连接2：" + false);
             return false;
         }
-        Log.e(TAG, "isAllowConnect: ======是否允许连接3："+true);
+        Log.e(TAG, "isAllowConnect: ======是否允许连接3：" + true);
         return true;
     }
+
     public synchronized static int isAllowConnectType(BluetoothDevice d) {
+        String macJson = mPreferences.getString("mac", "");
+        List<String> maclist = JSONObject.parseArray(macJson, String.class);
+        mMacList.clear();
+        if (maclist!=null){
+            mMacList.addAll(maclist);
+        }
+        String macmap = mPreferences.getString("macMap", "");
+        JSONObject jsonObject = JSONObject.parseObject(macmap);
+        mMap.clear();
+        if (jsonObject!=null){
+            mMap.putAll(jsonObject);     //json对象转Map
+        }
         String address = d.getAddress();
-        if (VinBean.getVin()==null||!MainHomeActivtiy.isTestOver||!CarApp.isMach(d)){
-                //拒绝连接
-                return 1;
-            }
-            if (){
-                //需要手动确认
-            }
-            if (!mMap.keySet().contains(address)||(mMacList.contains(address)&&CarApp.isMach(d))){
-                //自动连接
-                return 3;
+        if (!mMap.keySet().contains(address) || (!mMacList.contains(address) && CarApp.isMach(d))) {
+            Log.e(TAG, "==============自动");
+            //自动连接
+            return 3;
 
-            }
+        }
+        if (VinBean.getVin() == null || !MainHomeActivtiy.isTestOver || !CarApp.isMach(d) || Util.isHeadSetConnect()) {
+            Log.e(TAG, (VinBean.getVin() == null)+"-------"+(!MainHomeActivtiy.isTestOver)+"------"+!CarApp.isMach(d)+"------"+Util.isHeadSetConnect());
+            Log.e(TAG, "===============拒绝连接");
+            //拒绝连接
+            return 1;
+        }
+        if (mMacList.contains(address) && CarApp.isMach(d)) {
+            Log.e(TAG, "===========手动");
+            //需要手动确认
+            return 2;
+        }
 
-
+        return 1;
     }
-        /**
-         * 当mac地址不在过滤列表时，直接返回false表示允许连接
-         * 当mac地址在过滤列表时，则获取与之对应的vin号，如果vin号不为空且vin号与新的vin号不相等时，返回false
-         * 其它情况统一返回true表示阻止连接
-         * @param d
-         * @return
-         */
+
+    /**
+     * 当mac地址不在过滤列表时，直接返回false表示允许连接
+     * 当mac地址在过滤列表时，则获取与之对应的vin号，如果vin号不为空且vin号与新的vin号不相等时，返回false
+     * 其它情况统一返回true表示阻止连接
+     *
+     * @param d
+     * @return
+     */
     private static boolean isStopDeviceConnect(BluetoothDevice d) {
         if (VinBean.getVin() == null) {
             Log.e(TAG, "isStopDeviceConnect: vin为空==========请先获取vin");
@@ -175,10 +215,11 @@ public class CarApp extends Application {
         Log.e(TAG, "isStopDeviceConnect:====================此车未测过，不阻止连接");
         return false;
     }
+
     //监测当前mac和vin是否匹配,
     public static boolean isMach(BluetoothDevice d) {
         final String key = d.getAddress();
-        if (mMap.keySet().contains(key)&&mMap.get(key).equals(VinBean.getVin())){
+        if (mMap.keySet().contains(key) && mMap.get(key).equals(VinBean.getVin())) {
             return true;
         }
         return false;

@@ -53,25 +53,39 @@ public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
                     BluetoothDevice.EXTRA_PAIRING_VARIANT,
                     BluetoothDevice.PAIRING_VARIANT_PASSKEY_CONFIRMATION);
             cancel();//取消connect线程
-            //没有获取到vin阻止连接，监测未结束拒绝连接，连接过的mac地址与vin不匹配拒绝连接
-            if (VinBean.getVin() == null||!MainHomeActivtiy.isTestOver||!CarApp.isMach(device)) {
-                abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
-                boolean confirmation = device.setPairingConfirmation(false);
-                for (int i = 0; i < 5; i++) {//发送上次，确保发送成功
-                    if (confirmation) {
-                        break;
+            switch (CarApp.isAllowConnectType(device)){
+                case 1:
+                    abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
+                    boolean confirmation = device.setPairingConfirmation(false);
+                    for (int i = 0; i < 5; i++) {//发送上次，确保发送成功
+                        if (confirmation) {
+                            break;
+                        }
+                        confirmation = device.setPairingConfirmation(false);
                     }
-                    confirmation = device.setPairingConfirmation(false);
-                }
+                    break;
+                case 2:
+                    Toast.makeText(mContext,"该设备已经连接过",Toast.LENGTH_LONG).show();
+                    break;
+                case 3:
+                    abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
+                    boolean confirmation1 = device.setPairingConfirmation(true);
+                    for (int i = 0; i < 5; i++) {//发送上次，确保发送成功
+                        if (confirmation1) {
+                            break;
+                        }
+                        confirmation1 = device.setPairingConfirmation(true);
+                    }
+                    break;
             }
-            boolean isAllowConnect = CarApp.isAllowConnect(device);
-            if (isAllowConnect) {
-                abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
-                pair(device, type, isAllowConnect);
-            } else {
-                Toast.makeText(mContext,"该设备已经连接过",Toast.LENGTH_LONG).show();
-                pair(device, type, isAllowConnect);
-            }
+//            boolean isAllowConnect = CarApp.isAllowConnect(device);
+//            if (isAllowConnect) {
+//                abortBroadcast();//如果没有将广播终止，则会出现一个一闪而过的配对框。
+//                pair(device, type, isAllowConnect);
+//            } else {
+//                Toast.makeText(mContext,"该设备已经连接过",Toast.LENGTH_LONG).show();
+//                pair(device, type, isAllowConnect);
+//            }
         } else if (action.equals("android.bluetooth.device.action.CONNECTION_ACCESS_REQUEST")) {
             Log.e(TAG, "onReceive:===================================33333333333333");
             sendReplyAndCancel(context, intent);

@@ -318,7 +318,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                         e.printStackTrace();
                     } finally {
                         mActivtiy.mTestProcessHintTv.setText("发送检测结果成功");
-                        if (mActivtiy.mTimer!=null){
+                        if (mActivtiy.mTimer != null) {
                             mActivtiy.mTimer.cancel();
                             mActivtiy.mTimer = null;
                         }
@@ -476,7 +476,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 finish();
-                stopThread();
+                sConnectServerThread.stop();
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -541,7 +541,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         //重置ui
         mHandler.sendEmptyMessage(RESET);
         //		mHandler.sendEmptyMessageDelayed(CHECK_START,2000);
-        if (mTimer!=null){
+        if (mTimer != null) {
             mTimer.cancel();
             mTimer = null;
         }
@@ -762,6 +762,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         isGetSecondVin = true;
         finishRun(VinBean.getLastVin());
     }
+
     //得到配对的设备列表，清除已配对的设备
     public void removePairDevice() {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -770,7 +771,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             //这个就是获取已配对蓝牙列表的方法
             Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
             for (BluetoothDevice device : bondedDevices) {
-                Log.e(TAG, "removePairDevice: "+device.getAddress());
+                Log.e(TAG, "removePairDevice: " + device.getAddress());
                 //这里可以通过device.getName()  device.getAddress()来判断是否是自己需要断开的设备
                 unpairDevice(device);
             }
@@ -786,6 +787,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             Log.e("mate", e.getMessage());
         }
     }
+
     /**
      * 停止检测
      */
@@ -979,8 +981,11 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
 
         @Override
         public void run() {
+            if (sConnectServerThread != Thread.currentThread()) {
+                throw new RuntimeException();
+            }
             Log.e(TAG, "xxx===run:=============连接服务器线程开始运行");
-            while (!Thread.interrupted()) {
+            while (!Thread.interrupted() && sConnectServerThread != null) {
                 if (createConnect()) {
                     Log.e(TAG, "run:====================成功连接服务器");
                     try {
