@@ -79,6 +79,7 @@ public class DBManager {
             }
             db.setTransactionSuccessful(); // 设置事务成功完成
         } finally {
+
             db.endTransaction(); // 结束事务
         }
     }
