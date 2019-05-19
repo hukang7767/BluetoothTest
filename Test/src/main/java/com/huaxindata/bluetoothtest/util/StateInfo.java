@@ -20,10 +20,11 @@ public interface StateInfo {
 
 	public static final int RELEASE = CHECK_START + 16;
 	public static final int START_ANOTHER_TEST=CHECK_START+17;
-
+	public static final int START_BLE=CHECK_START+18;
 	public static final int TEST_GET_VIN = 1;// 获得VIN
 
 	public static final int CHECKIN_INDEX = 8;
+
 
 	// public static final int CHAOSHI = 99;
 }

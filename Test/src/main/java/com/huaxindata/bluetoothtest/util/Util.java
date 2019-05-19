@@ -301,11 +301,11 @@ public class Util {
             final int state = (int) getConnectionState.invoke(adapter);
             switch (state) {
                 case BluetoothAdapter.STATE_CONNECTED:
-//                    Log.e(TAG, "isHeadSetConnect：2====================蓝牙已经连接");
+                    Log.e(TAG, "isHeadSetConnect：2====================蓝牙已经连接");
                     flag2 = true;
                     break;
                 case BluetoothAdapter.STATE_DISCONNECTED:
-//                    Log.e(TAG, "isHeadSetConnect：0====================蓝牙未连接");
+                    Log.e(TAG, "isHeadSetConnect：0====================蓝牙未连接");
                     flag2 = false;
                     break;
             }
