@@ -33,6 +33,7 @@ public class SettingIPActivity extends Activity {
 	private TextView socketName;
 	private EditText socketPort;
 	private EditText socketEt;
+	private EditText edt_max_max;
 //	private TextView serverIP;
 //	private EditText serverEt;
 private EditText serverEt1;
@@ -121,9 +122,11 @@ private EditText serverEt1;
 		serverEt2 = (EditText) findViewById(R.id.settingIp_server_et2);
 		serverEt3 = (EditText) findViewById(R.id.settingIp_server_et3);
 		serverEt4 = (EditText) findViewById(R.id.settingIp_server_et4);
+		edt_max_max = (EditText) findViewById(R.id.edt_max_max);
 		vol = (EditText) findViewById(R.id.setting_vol);
 		socketEt.setHint(""+ NetConfig.getMaxTest()/1000);
 		vol.setHint(""+Configuration.getVol(this));
+		edt_max_max.setHint(""+Configuration.getMaxMAc(this));
 		socketPort.setHint("" + NetConfig.getPORT());
 
 		button = (Button) findViewById(R.id.setting_serverbutton);
@@ -168,6 +171,7 @@ private EditText serverEt1;
 					editor.putInt("MAX_TIME",1000*newTimeout);
 				}
 				final String volStr = vol.getText().toString().trim();
+				String maxMacStr = edt_max_max.getText().toString().trim();
 				if (!TextUtils.isEmpty(volStr)) {
 					int volInt=0;
 					try {
@@ -177,6 +181,18 @@ private EditText serverEt1;
 					}finally {
 						if (volInt > 0) {
 							Configuration.setVol(getApplicationContext(),volInt );
+						}
+					}
+				}
+				if (!TextUtils.isEmpty(maxMacStr)) {
+					int maxMac=0;
+					try {
+						maxMac = Integer.parseInt(maxMacStr);
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					}finally {
+						if (maxMac > 0) {
+							Configuration.setMaxMac(getApplicationContext(),maxMac);
 						}
 					}
 				}
@@ -200,7 +216,7 @@ private EditText serverEt1;
 		return string;
 	}
 	private boolean checkIp(String ip){
-		if (ip == null) {
+		if (ip == null||"".equals(ip)) {
 			return false;
 		}
 		int i = Integer.parseInt(ip);

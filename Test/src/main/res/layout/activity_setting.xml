@@ -121,19 +121,23 @@
                 android:textSize="@dimen/setting_button"
                  />
 
-            <CheckBox
-                android:id="@+id/setting_bl_filter_chbx"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:drawableTop="@drawable/bluetooth"
-                android:drawablePadding="10dp"
                 android:gravity="center"
-                android:text="过滤蓝牙"
-                android:textColor="#1a1a1a"
-                android:textSize="@dimen/setting_button"
-                android:visibility="invisible" />
+                android:layout_weight="1">
+                <Switch
+                    android:id="@+id/s_v"
+                    android:layout_width="80dp"
+                    android:layout_height="30dp"
+                    android:switchMinWidth="20dp"
+                    android:textOn="开"
+                    android:textOff="关"
+                    android:textSize="28dp"
+                    android:switchTextAppearance="@style/MyTextAppearance"
+                    android:thumb="@drawable/thumb"
+                    android:track="@drawable/track"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

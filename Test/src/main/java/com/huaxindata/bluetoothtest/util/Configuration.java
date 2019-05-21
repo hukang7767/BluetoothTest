@@ -70,17 +70,35 @@ public class Configuration {
 		prefs.putInt(PC_PORT, prot);
 		prefs.commit();
 	}
-	
+	public static void setLogOpen(Context c,boolean isOpen){
+		SharedPreferences.Editor prefs = c.getSharedPreferences(
+				"setting", 0).edit();
+		prefs.putBoolean("log", isOpen);
+		prefs.commit();
+	}
+	public static boolean getLogOpen(Context c){
+		SharedPreferences prefs = c.getSharedPreferences("setting", 0);
+		return prefs.getBoolean("log",false);
+	}
 	public static void setVol(Context c,int val){
 		SharedPreferences.Editor prefs = c.getSharedPreferences(
 				"setting", 0).edit();
 		prefs.putInt("vol", val);
 		prefs.commit();
 	}
-	
 	public static int getVol(Context c){
 		SharedPreferences prefs = c.getSharedPreferences("setting", 0);
 		return prefs.getInt("vol",10);
+	}
+	public static void setMaxMac(Context c,int max){
+		SharedPreferences.Editor prefs = c.getSharedPreferences(
+				"setting", 0).edit();
+		prefs.putInt("settingMac", max);
+		prefs.commit();
+	}
+	public static int getMaxMAc(Context c){
+		SharedPreferences prefs = c.getSharedPreferences("setting", 0);
+		return prefs.getInt("settingMac",100);
 	}
 //	public static String loadPcIP(Context context) {
 //		SharedPreferences prefs = context.getSharedPreferences("setting", 0);

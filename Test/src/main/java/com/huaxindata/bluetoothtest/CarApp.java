@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.huaxindata.bluetoothtest.activity.MainHomeActivtiy;
 import com.huaxindata.bluetoothtest.entity.NetConfig;
 import com.huaxindata.bluetoothtest.entity.VinBean;
+import com.huaxindata.bluetoothtest.util.Configuration;
 import com.huaxindata.bluetoothtest.util.Util;
 import com.iflytek.cloud.SpeechUtility;
 
@@ -107,7 +108,7 @@ public class CarApp extends Application {
         if (maclist!=null){
             mMacList.addAll(maclist);
         }
-        if (mMacList != null && mMacList.size() > 100) {
+        if (mMacList != null && mMacList.size() > Configuration.getMaxMAc(CarApp.app)) {
             mMacList.clear();
         }
         if (!mMacList.contains(mac)) {
@@ -125,7 +126,7 @@ public class CarApp extends Application {
         if (jsonObject!=null){
             mMap.putAll(jsonObject);     //json对象转Map
         }
-        if (mMap != null && mMap.size() > 100) {
+        if (mMap != null && mMap.size() > Configuration.getMaxMAc(CarApp.app)) {
             mMap.clear();
         }
         mMap.put(mac, vin);

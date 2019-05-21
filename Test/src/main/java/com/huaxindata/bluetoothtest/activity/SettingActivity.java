@@ -9,13 +9,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.huaxindata.bluetoothtest.R;
 import com.huaxindata.bluetoothtest.util.Configuration;
 import com.huaxindata.bluetoothtest.util.DBManager;
+import com.huaxindata.bluetoothtest.util.LogcatHelper;
 
 import java.io.IOException;
 
@@ -26,7 +29,7 @@ public class SettingActivity extends Activity {
     private TextView speaksettingbutton;
     private DBManager mgr;
     private CheckBox mSetBlFilterChBx;
-
+    private Switch s_v;
     @SuppressLint("StringFormatMatches")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +37,20 @@ public class SettingActivity extends Activity {
         setContentView(R.layout.activity_setting);
         mgr = new DBManager(this);
         back = (ImageView) findViewById(R.id.setting_back);
+        s_v = (Switch) findViewById(R.id.s_v);
         back.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 finish();
+            }
+        });
+        s_v.setChecked(Configuration.getLogOpen(SettingActivity.this));
+        s_v.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                LogcatHelper.isDebug = isChecked;
+                Configuration.setLogOpen(SettingActivity.this,isChecked);
             }
         });
         /*mSetBlFilterChBx = (CheckBox) findViewById(R.id.setting_bl_filter_chbx);

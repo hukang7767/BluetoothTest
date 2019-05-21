@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Environment;
 
+import com.huaxindata.bluetoothtest.activity.SettingActivity;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,6 +29,7 @@ public class LogcatHelper {
     private static String PATH_LOGCAT;
     private LogDumper mLogDumper = null;
     private int mPId;
+    public static boolean isDebug = true;
 
     /**
      * 初始化目录
@@ -44,6 +47,7 @@ public class LogcatHelper {
         if (!file.exists()) {
             file.mkdirs();
         }
+        isDebug = Configuration.getLogOpen(context);
     }
 
     public static LogcatHelper getInstance(Context context) {
@@ -110,7 +114,7 @@ public class LogcatHelper {
 
         }
 
-        public final static boolean isDebug = true;
+
 
         public void stopLogs() {
             mRunning = false;
