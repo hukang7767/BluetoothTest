@@ -101,7 +101,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
     private static long startTime;
     private SpeechListenner mSpeechListenner;//讯飞语音识别听音器
     private Timer mTimer = null;
-//    private Button mRestartBtn;
+    //    private Button mRestartBtn;
     private boolean isReStart;
     private BluetoothAdapter adapter;
 
@@ -277,7 +277,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case START_BLE:
-                    if (mActivtiy.adapter!=null&&!mActivtiy.adapter.isEnabled()){
+                    if (mActivtiy.adapter != null && !mActivtiy.adapter.isEnabled()) {
                         mActivtiy.adapter.enable();
                     }
                     break;
@@ -363,10 +363,10 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                     mActivtiy.mVinHintTv.setText("VIN:" + VinBean.getVin());
                     Util.cancelBond();
                     mActivtiy.reset();
-                    if ( mActivtiy.adapter!=null){
+                    if (mActivtiy.adapter != null) {
                         mActivtiy.adapter.disable();
                     }
-                    mActivtiy.mHandler.sendEmptyMessageDelayed(START_BLE,3000);
+                    mActivtiy.mHandler.sendEmptyMessageDelayed(START_BLE, 3000);
                     mActivtiy.initTimer();
                     break;
                 case CHECKIN_INDEX:
@@ -403,7 +403,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 }
             }
         });
-        Log.e(TAG, "canStart:检测线程是否关闭 "+(mTestThread==null)+"-------蓝牙是否连接"+isHeadSetConnect+"vin码是否为空" +(VinBean.getVin()==null));
+        Log.e(TAG, "canStart:检测线程是否关闭 " + (mTestThread == null) + "-------蓝牙是否连接" + isHeadSetConnect + "vin码是否为空" + (VinBean.getVin() == null));
         /**
          * Must wait for VIN before sSocket to buletooth(car)
          */
@@ -424,10 +424,10 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                     if (vinCode.length() == 17) {
                         VinBean.setVin(vinCode);
                         mVinHintTv.setText("VIN:" + VinBean.getVin());
-                        if ( adapter!=null){
+                        if (adapter != null) {
                             adapter.disable();
                         }
-                        mHandler.sendEmptyMessageDelayed(START_BLE,3000);
+                        mHandler.sendEmptyMessageDelayed(START_BLE, 3000);
                         Log.e(TAG, "====通过扫码获取到了vin");
                         initTimer();
                     } else {
@@ -996,10 +996,10 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         private static boolean isOver = false;
 
         private static String bvin, bsend, breply;
-
         WeakReference<MainHomeActivtiy> mWeakReference;
         MainHomeActivtiy mMainHomeActivtiy;
         private ReadThread readThread;
+        private long lastHeartbeat;
 
         public ConnectServerThread(MainHomeActivtiy activtiy) {
             super();
@@ -1016,6 +1016,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 throw new RuntimeException();
             }
             Log.e(TAG, "xxx===run:=============连接服务器线程开始运行");
+
             while (!Thread.interrupted() && sConnectServerThread != null) {
                 if (createConnect()) {
                     Log.e(TAG, "run:====================成功连接服务器");
@@ -1051,22 +1052,22 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
          */
         private synchronized boolean createConnect() {
             Log.e(TAG, "createConnect:============创建连接");
-            Log.e(TAG, "createConnect:============"+sSocket+"--------");
-            if (sSocket!=null){
-                Log.e(TAG, "createConnect:============"+sSocket.isConnected()+"--------");
-//                try {
-//                    sSocket.sendUrgentData(0xFF);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    kill();
-//                }
+            if (sSocket != null) {
+                Log.e(TAG, "createConnect:============" + sSocket.isConnected() + "--------");
+                send(START+"connect");
             }
             if (sSocket != null && !sSocket.isConnected()) {
                 Log.e(TAG, "createConnect: ====socket不为空，但没有连接上服务器");
                 kill();
             }
-
+            int autoLine = Configuration.getAutoLine(mContext)*1000 <= TIMEOUT ? 6000 : Configuration.getAutoLine(mContext)*1000;
+            Log.e(TAG, "createConnect: "+autoLine);
+            if (lastHeartbeat != 0 && System.currentTimeMillis() - lastHeartbeat > autoLine) {
+                kill();
+                Log.e(TAG, "createConnect: ====心跳异常，尝试重新连接");
+            }
             if (sSocket == null) {
+                Log.e(TAG, "createConnect========执行了");
                 String ip = NetConfig.getIP();
                 int port = NetConfig.getPORT();
                 if (ip == null) {
@@ -1082,6 +1083,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                     readThread = new ReadThread();
                     readThread.start();//开启读取线程
                     sSocket.setTcpNoDelay(true);
+                    lastHeartbeat = System.currentTimeMillis();
                     Log.e(TAG, "=========createConnect: 成功连接上服务器啦，好开心...");
                     return true;
                 } catch (IOException e) {
@@ -1089,9 +1091,9 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                     e.printStackTrace();
                 }
             }
-            if (readThread==null||!readThread.isAlive()){
+            if (sInputStream!=null&&(readThread == null || !readThread.isAlive())) {
                 Log.e(TAG, "createConnect: ========读取线程关闭了===");
-                readThread =  new ReadThread();
+                readThread = new ReadThread();
                 readThread.start();
             }
             return false;
@@ -1115,18 +1117,18 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                         if (len > 0) {
                             final String read = new String(buffer, 0, len);
                             processRead(read);
-                            Log.e(TAG, "run:====================从服务器读取到数据vin:" + read);
+                            Log.e(TAG, "run:====================从服务器读取到数据" + read);
                         } else {
                             Log.e(TAG, "=============================sSocket is close!");
                             break;
                         }
                     } catch (IOException e) {
-                        Log.i(TAG, "run: "+e.toString());
+                        Log.i(TAG, "run: " + e.toString());
                         e.printStackTrace();
                         break;
                     }
                 }
-                kill();
+//                kill();
             }
         }
 
@@ -1161,9 +1163,22 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                     send("END", null);
                     mMainHomeActivtiy.sendMessage(StateInfo.TEST_OVER);
                 }
+            } else if ("YES".equals(read)) {
+                Log.e(TAG, "心跳正常");
+                lastHeartbeat = System.currentTimeMillis();
             } else {//vin码发送错误
                 android.util.Log.e(TAG, "vin error:" + read);
                 send(read, null);
+            }
+        }
+
+        public void send(String string) {
+            try {
+                sOutputStream.write(string.getBytes());
+                sOutputStream.flush();
+            } catch (Exception e) {
+                kill();
+                return;
             }
         }
 
@@ -1188,7 +1203,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                     sOutputStream.write(string.getBytes());
                     sOutputStream.flush();
                 } catch (Exception e) {
-                    Log.e(TAG, "send: "+e.toString() );
+                    Log.e(TAG, "send: " + e.toString());
                     e.printStackTrace();
                     if (!isOver) {
                         bsend = string;
@@ -1242,6 +1257,10 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 if (sOutputStream != null) {
                     sOutputStream.close();
                 }
+                if (readThread!=null){
+                    readThread.stop();
+                    readThread = null;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1249,15 +1268,15 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             sOutputStream = null;
             sSocket = null;
             Log.e(TAG, "kill================断开连接，关闭流,对象置空: ");
-            synchronized (lock) {
-                lock.notify();
-                Log.e(TAG, "==============notify 释放锁...");
-            }
-            try {
-                this.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            synchronized (lock) {
+//                lock.notify();
+//                Log.e(TAG, "==============notify 释放锁...");
+//            }
+//            try {
+//                this.join();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 }

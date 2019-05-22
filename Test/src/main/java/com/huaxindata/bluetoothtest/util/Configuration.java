@@ -90,6 +90,16 @@ public class Configuration {
 		SharedPreferences prefs = c.getSharedPreferences("setting", 0);
 		return prefs.getInt("vol",10);
 	}
+	public static void setAutoLine(Context c,int time){
+		SharedPreferences.Editor prefs = c.getSharedPreferences(
+				"setting", 0).edit();
+		prefs.putInt("autoLine", time);
+		prefs.commit();
+	}
+	public static int getAutoLine(Context c){
+		SharedPreferences prefs = c.getSharedPreferences("setting", 0);
+		return prefs.getInt("autoLine",5);
+	}
 	public static void setMaxMac(Context c,int max){
 		SharedPreferences.Editor prefs = c.getSharedPreferences(
 				"setting", 0).edit();

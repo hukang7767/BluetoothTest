@@ -34,6 +34,7 @@ public class SettingIPActivity extends Activity {
 	private EditText socketPort;
 	private EditText socketEt;
 	private EditText edt_max_max;
+	private EditText edt_autoLine_time;
 //	private TextView serverIP;
 //	private EditText serverEt;
 private EditText serverEt1;
@@ -123,10 +124,12 @@ private EditText serverEt1;
 		serverEt3 = (EditText) findViewById(R.id.settingIp_server_et3);
 		serverEt4 = (EditText) findViewById(R.id.settingIp_server_et4);
 		edt_max_max = (EditText) findViewById(R.id.edt_max_max);
+		edt_autoLine_time = (EditText) findViewById(R.id.edt_autoLine_time);
 		vol = (EditText) findViewById(R.id.setting_vol);
 		socketEt.setHint(""+ NetConfig.getMaxTest()/1000);
 		vol.setHint(""+Configuration.getVol(this));
 		edt_max_max.setHint(""+Configuration.getMaxMAc(this));
+		edt_max_max.setHint(""+Configuration.getAutoLine(this));
 		socketPort.setHint("" + NetConfig.getPORT());
 
 		button = (Button) findViewById(R.id.setting_serverbutton);
@@ -172,6 +175,7 @@ private EditText serverEt1;
 				}
 				final String volStr = vol.getText().toString().trim();
 				String maxMacStr = edt_max_max.getText().toString().trim();
+				String autoLineStr = edt_autoLine_time.getText().toString().trim();
 				if (!TextUtils.isEmpty(volStr)) {
 					int volInt=0;
 					try {
@@ -193,6 +197,18 @@ private EditText serverEt1;
 					}finally {
 						if (maxMac > 0) {
 							Configuration.setMaxMac(getApplicationContext(),maxMac);
+						}
+					}
+				}
+				if (!TextUtils.isEmpty(autoLineStr)) {
+					int autoLine=0;
+					try {
+						autoLine = Integer.parseInt(autoLineStr);
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					}finally {
+						if (autoLine > 0) {
+							Configuration.setAutoLine(getApplicationContext(),autoLine);
 						}
 					}
 				}
