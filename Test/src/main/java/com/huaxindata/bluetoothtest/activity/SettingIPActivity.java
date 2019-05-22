@@ -129,7 +129,7 @@ private EditText serverEt1;
 		socketEt.setHint(""+ NetConfig.getMaxTest()/1000);
 		vol.setHint(""+Configuration.getVol(this));
 		edt_max_max.setHint(""+Configuration.getMaxMAc(this));
-		edt_max_max.setHint(""+Configuration.getAutoLine(this));
+		edt_autoLine_time.setHint(""+Configuration.getAutoLine(this));
 		socketPort.setHint("" + NetConfig.getPORT());
 
 		button = (Button) findViewById(R.id.setting_serverbutton);
