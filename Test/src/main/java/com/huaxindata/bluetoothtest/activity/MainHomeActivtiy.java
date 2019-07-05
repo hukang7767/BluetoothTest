@@ -1151,6 +1151,10 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                         VinBean.setLastVin(VinBean.getVin());
                         VinBean.setVin(read);//将新的vin设置进去
                         mMainHomeActivtiy.sendMessage(StateInfo.START_ANOTHER_TEST);
+                        if (mMainHomeActivtiy.mTestThread!=null) {
+                            mMainHomeActivtiy.mTestThread.stop();
+                            mMainHomeActivtiy.mTestThread = null;
+                        }
                         mMainHomeActivtiy.sendMessageDelayed(StateInfo.TEST_GET_VIN, 1500);
                         Log.e(TAG, "processRead:新来的vin=" + VinBean.getVin() + "\t原来的vin" + VinBean.getLastVin());
                     }

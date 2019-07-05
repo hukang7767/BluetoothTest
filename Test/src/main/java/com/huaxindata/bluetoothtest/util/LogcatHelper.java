@@ -3,6 +3,7 @@ package com.huaxindata.bluetoothtest.util;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import com.huaxindata.bluetoothtest.activity.SettingActivity;
 
