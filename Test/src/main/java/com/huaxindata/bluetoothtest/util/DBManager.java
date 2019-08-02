@@ -153,7 +153,19 @@ public class DBManager {
         c.close();
         return persons;
     }
-
+    public void deleteForVin(String vin) {
+        db.beginTransaction(); // 开始事务
+        try {
+            //DELETE FROM CUSTOMERS
+            //db.execSQL("Update  testinfo set show=1 WHERE show=0");
+            db.execSQL(
+                    "DELETE * FROM testinfo WHERE show=0 and vin LIKE '%" + vin
+                            + "%'", null);
+            db.setTransactionSuccessful(); // 设置事务成功完成
+        } finally {
+            db.endTransaction(); // 结束事务
+        }
+    }
     public List<TestInfoDTO> queryForTime(long times, long timee) {
         ArrayList<TestInfoDTO> persons = new ArrayList<TestInfoDTO>();
         Cursor c = db.rawQuery("SELECT * FROM testinfo WHERE show=0 and time<"

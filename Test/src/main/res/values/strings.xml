@@ -5,10 +5,10 @@
     <string name="text_begin">请开始说话…</string>
 
 
-    <string name="app_name">东风本田蓝牙检测</string>
+    <string name="app_name">广汽本田蓝牙检测</string>
     <string name="hello_world">Hello world!</string>
     <string name="settings">设置</string>
-    <string name="home_title">东风本田蓝牙检测系统</string>
+    <string name="home_title">广汽本田蓝牙检测系统</string>
     <string name="wait_test">等待测试</string>
     <string name="initialize_bluetooth">初始化蓝牙</string>
     <string name="huaxin_name">武汉华信数据系统有限公司</string>

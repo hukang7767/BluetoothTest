@@ -104,6 +104,8 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
     //    private Button mRestartBtn;
     private boolean isReStart;
     private BluetoothAdapter adapter;
+    private Timer mTimer1;
+    private List<TestInfoDTO> infoDTOs1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +126,25 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         adapter = BluetoothAdapter.getDefaultAdapter();
         isReStart = false;
     }
+    private void socketClientSendMSGToService(String msg) {
+        Log.e("xxx", "onClick:=========上传" + msg);
+        upload(msg);
+    }
 
+    private void upload(String msg) {
+        if (sConnectServerThread!=null){
+            sConnectServerThread.isUploaded= true;
+            sConnectServerThread.send(msg, "BL");
+        }
+    }
+    public String getInfo(TestInfoDTO infoDTO) {
+        if (infoDTO.getStatelisten() == Configuration.CHECK_TRUE
+                && infoDTO.getStatespeack() ==Configuration.CHECK_TRUE) {
+            return "BLOK";
+        } else {
+            return "BLNG";
+        }
+    }
     private void initTimer() {
         mTimer = new Timer(true);
         mTimer.schedule(new TimerTask() {
@@ -135,6 +155,21 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 }
             }
         }, 500, 3000);
+
+        mTimer1 = new Timer(true);
+        mTimer1.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                infoDTOs1 = sDBManager.query();
+                for (int i = 0; i < infoDTOs1.size(); i++) {
+                    if (infoDTOs1.get(i).isChoose()) {
+                        socketClientSendMSGToService(infoDTOs1.get(i).getVin()
+                                + "[" + getInfo(infoDTOs1.get(i)) + "]");
+
+                    }
+                }
+            }
+        }, 500, 1000*60*5);
     }
 
     private void initThread() {
@@ -872,6 +907,8 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             return;
         }
         Log.e(TAG, "save: ================保存检测结果到本地:" + vin);
+        if(sIsSendResultSuccess)
+            return;
         ArrayList<TestInfoDTO> persons = new ArrayList<>();
         TestInfoDTO dto = new TestInfoDTO(vin,
                 new Date().getTime(), Configuration.CHECK_TRUE,
@@ -1170,6 +1207,8 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             } else if ("YES".equals(read)) {
                 Log.e(TAG, "心跳正常");
                 lastHeartbeat = System.currentTimeMillis();
+            }else if(read!=null&&read.length()==24&&read.endsWith("Success")){
+                sDBManager.deleteForVin(read.replace("Success",""));
             } else {//vin码发送错误
                 android.util.Log.e(TAG, "vin error:" + read);
                 send(read, null);
