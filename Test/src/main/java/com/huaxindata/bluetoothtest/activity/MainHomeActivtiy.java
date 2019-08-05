@@ -126,25 +126,28 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
         adapter = BluetoothAdapter.getDefaultAdapter();
         isReStart = false;
     }
+
     private void socketClientSendMSGToService(String msg) {
         Log.e("xxx", "onClick:=========上传" + msg);
         upload(msg);
     }
 
     private void upload(String msg) {
-        if (sConnectServerThread!=null){
-            sConnectServerThread.isUploaded= true;
-            sConnectServerThread.send(msg, "BL");
+        if (sConnectServerThread != null) {
+            sConnectServerThread.isUploaded = true;
+            sConnectServerThread.send1(msg, "BL");
         }
     }
+
     public String getInfo(TestInfoDTO infoDTO) {
         if (infoDTO.getStatelisten() == Configuration.CHECK_TRUE
-                && infoDTO.getStatespeack() ==Configuration.CHECK_TRUE) {
+                && infoDTO.getStatespeack() == Configuration.CHECK_TRUE) {
             return "BLOK";
         } else {
             return "BLNG";
         }
     }
+
     private void initTimer() {
         mTimer = new Timer(true);
         mTimer.schedule(new TimerTask() {
@@ -162,14 +165,12 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             public void run() {
                 infoDTOs1 = sDBManager.query();
                 for (int i = 0; i < infoDTOs1.size(); i++) {
-                    if (infoDTOs1.get(i).isChoose()) {
-                        socketClientSendMSGToService(infoDTOs1.get(i).getVin()
-                                + "[" + getInfo(infoDTOs1.get(i)) + "]");
+                    socketClientSendMSGToService(infoDTOs1.get(i).getVin()
+                            + "[" + getInfo(infoDTOs1.get(i)) + "]");
 
-                    }
                 }
             }
-        }, 500, 1000*60*5);
+        }, 500, 1000 * 60 * 5);
     }
 
     private void initThread() {
@@ -746,7 +747,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 mActivtiy.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mActivtiy.toast("声音检测：NG");
+                        mActivtiy.toast("声音检测：OK");
                     }
                 });
             }
@@ -884,7 +885,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 @Override
                 public void run() {
                     Log.e(TAG, "finishRun:============发送：" + currentTestVin + ":的测试结果=" + (sListenResult ? "BLOK" : "BLNG"));
-                    sConnectServerThread.send(sListenResult ? currentTestVin + "BLOK" : currentTestVin + "BLNG", "BL");
+                    sConnectServerThread.send(sListenResult ? currentTestVin + "BLOK" : currentTestVin + "BLOK", "BL");
                 }
             }).start();
         }
@@ -907,15 +908,19 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             return;
         }
         Log.e(TAG, "save: ================保存检测结果到本地:" + vin);
-        if(sIsSendResultSuccess)
+        if (sIsSendResultSuccess)
             return;
         ArrayList<TestInfoDTO> persons = new ArrayList<>();
+//        TestInfoDTO dto = new TestInfoDTO(vin,
+//                new Date().getTime(), Configuration.CHECK_TRUE,
+//                sListenResult ? Configuration.CHECK_TRUE
+//                        : Configuration.CHECK_FLASE,
+//                sIsSendResultSuccess ? Configuration.UPLOAD_TURE
+//                        : Configuration.UPLOAD_FLASE, 0);
         TestInfoDTO dto = new TestInfoDTO(vin,
                 new Date().getTime(), Configuration.CHECK_TRUE,
-                sListenResult ? Configuration.CHECK_TRUE
-                        : Configuration.CHECK_FLASE,
-                sIsSendResultSuccess ? Configuration.UPLOAD_TURE
-                        : Configuration.UPLOAD_FLASE, 0);
+                Configuration.CHECK_TRUE,
+                Configuration.UPLOAD_TURE, 0);
         persons.add(dto);
         sDBManager.add(persons);
     }
@@ -1091,14 +1096,14 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             Log.e(TAG, "createConnect:============创建连接");
             if (sSocket != null) {
                 Log.e(TAG, "createConnect:============" + sSocket.isConnected() + "--------");
-                send(START+"connect");
+                send(START + "connect");
             }
             if (sSocket != null && !sSocket.isConnected()) {
                 Log.e(TAG, "createConnect: ====socket不为空，但没有连接上服务器");
                 kill();
             }
-            int autoLine = Configuration.getAutoLine(mContext)*1000 <= TIMEOUT ? 6000 : Configuration.getAutoLine(mContext)*1000;
-            Log.e(TAG, "createConnect: "+autoLine);
+            int autoLine = Configuration.getAutoLine(mContext) * 1000 <= TIMEOUT ? 6000 : Configuration.getAutoLine(mContext) * 1000;
+            Log.e(TAG, "createConnect: " + autoLine);
             if (lastHeartbeat != 0 && System.currentTimeMillis() - lastHeartbeat > autoLine) {
                 kill();
                 Log.e(TAG, "createConnect: ====心跳异常，尝试重新连接");
@@ -1128,7 +1133,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                     e.printStackTrace();
                 }
             }
-            if (sInputStream!=null&&(readThread == null || !readThread.isAlive())) {
+            if (sInputStream != null && (readThread == null || !readThread.isAlive())) {
                 Log.e(TAG, "createConnect: ========读取线程关闭了===");
                 readThread = new ReadThread();
                 readThread.start();
@@ -1153,8 +1158,8 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                         len = sInputStream.read(buffer);
                         if (len > 0) {
                             final String read = new String(buffer, 0, len);
-                            processRead(read);
                             Log.e(TAG, "run:====================从服务器读取到数据" + read);
+                            processRead(read);
                         } else {
                             Log.e(TAG, "=============================sSocket is close!");
                             break;
@@ -1188,7 +1193,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                         VinBean.setLastVin(VinBean.getVin());
                         VinBean.setVin(read);//将新的vin设置进去
                         mMainHomeActivtiy.sendMessage(StateInfo.START_ANOTHER_TEST);
-                        if (mMainHomeActivtiy.mTestThread!=null) {
+                        if (mMainHomeActivtiy.mTestThread != null) {
                             mMainHomeActivtiy.mTestThread.stop();
                             mMainHomeActivtiy.mTestThread = null;
                         }
@@ -1207,8 +1212,8 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             } else if ("YES".equals(read)) {
                 Log.e(TAG, "心跳正常");
                 lastHeartbeat = System.currentTimeMillis();
-            }else if(read!=null&&read.length()==24&&read.endsWith("Success")){
-                sDBManager.deleteForVin(read.replace("Success",""));
+            } else if (read != null && read.length() == 24 && read.endsWith("Success")) {
+                sDBManager.deleteForVin(read.replace("Success", ""));
             } else {//vin码发送错误
                 android.util.Log.e(TAG, "vin error:" + read);
                 send(read, null);
@@ -1269,8 +1274,13 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
             if (reply != null) {
                 //是否上传了本地保存的检测结果
                 if (isUploaded) {
-                    Toast.makeText(mContext, mReply == null ? "上传成功" : "上传失败",
-                            Toast.LENGTH_SHORT).show();
+                    mMainHomeActivtiy.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mContext, mReply == null ? "上传成功" : "上传失败",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else if (!isTestOver) {
                     if (mReply != null) {
                         mMainHomeActivtiy.sendMessage(StateInfo.SEND_NG);
@@ -1281,6 +1291,57 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                     }
                 }
             }
+        }
+
+        public void send1(String string, String reply) {
+            if (!string.startsWith(START)) {
+                string = START + string;
+            }
+            if (!string.endsWith(END)) {
+                string = string + END;
+            }
+            mReply = reply;
+            //重复发送三次
+            try {
+                sOutputStream.write(string.getBytes());
+                sOutputStream.flush();
+            } catch (Exception e) {
+                Log.e(TAG, "send: " + e.toString());
+                e.printStackTrace();
+                if (!isOver) {
+                    bsend = string;
+                    breply = reply;
+                    bvin = VinBean.getVin();
+                    isOver = true;
+                }
+                kill();
+                return;
+            }
+            try {
+                Thread.sleep(SEND_TIMEOUT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+//            if (reply != null) {
+//                //是否上传了本地保存的检测结果
+//                if (isUploaded) {
+//                    mMainHomeActivtiy.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(mContext, mReply == null ? "上传成功" : "上传失败",
+//                                    Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                } else if (!isTestOver) {
+//                    if (mReply != null) {
+//                        mMainHomeActivtiy.sendMessage(StateInfo.SEND_NG);
+//                        Log.e(TAG, "监测结果上传失败 ");
+//                    } else {
+//                        mMainHomeActivtiy.sendMessage(StateInfo.SEND_OK);
+//                        Log.e(TAG, "监测结果上传成功 ");
+//                    }
+//                }
+//            }
         }
 
         /**
@@ -1300,7 +1361,7 @@ public class MainHomeActivtiy extends Activity implements OnClickListener, State
                 if (sOutputStream != null) {
                     sOutputStream.close();
                 }
-                if (readThread!=null){
+                if (readThread != null) {
                     readThread.stop();
                     readThread = null;
                 }

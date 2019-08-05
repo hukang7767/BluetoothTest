@@ -10,8 +10,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.huaxindata.bluetoothtest.activity.MainHomeActivtiy.TAG;
+
 public class DBManager {
-    private DbdataService  helper;
+    private DbdataService helper;
     private SQLiteDatabase db;
     private static int count = -1;
 
@@ -153,19 +155,12 @@ public class DBManager {
         c.close();
         return persons;
     }
+
     public void deleteForVin(String vin) {
-        db.beginTransaction(); // 开始事务
-        try {
-            //DELETE FROM CUSTOMERS
-            //db.execSQL("Update  testinfo set show=1 WHERE show=0");
-            db.execSQL(
-                    "DELETE * FROM testinfo WHERE show=0 and vin LIKE '%" + vin
-                            + "%'", null);
-            db.setTransactionSuccessful(); // 设置事务成功完成
-        } finally {
-            db.endTransaction(); // 结束事务
-        }
+        int o = db.delete("testinfo", "vin = ?", new String[]{vin});
+        Log.e(TAG, "run:从数据库删了" + o);
     }
+
     public List<TestInfoDTO> queryForTime(long times, long timee) {
         ArrayList<TestInfoDTO> persons = new ArrayList<TestInfoDTO>();
         Cursor c = db.rawQuery("SELECT * FROM testinfo WHERE show=0 and time<"

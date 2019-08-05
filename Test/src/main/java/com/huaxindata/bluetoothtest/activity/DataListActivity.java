@@ -459,7 +459,7 @@ public class DataListActivity extends Activity {
 
 	private void upload(String msg) {
 		MainHomeActivtiy.sConnectServerThread.isUploaded= true;
-		MainHomeActivtiy.sConnectServerThread.send(msg, "BL");
+		MainHomeActivtiy.sConnectServerThread.send1(msg, "BL");
 	}
 
 
